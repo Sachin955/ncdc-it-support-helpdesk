@@ -1,0 +1,10 @@
+.custom-btn {
+  background-color:#5842df !important; 
+  color: white !important;          /* 🔥 important */
+  border: none;
+  font-weight: bold;
+}
+
+.custom-btn:hover {
+  background-color: lightskyblue !important;
+}

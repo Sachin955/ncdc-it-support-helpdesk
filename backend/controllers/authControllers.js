@@ -1,3 +1,5 @@
+
+// this file work as - data lata hai or DB mae save karta hai
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
