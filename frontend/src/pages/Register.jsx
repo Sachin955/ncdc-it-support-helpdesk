@@ -55,34 +55,32 @@ function Register() {
                                 })
                             }}
                             required />
-                        <select className="form-control mb-3">
-                            <option disabled selected>Select Department</option>
-                            <option>IT</option>
-                            <option>HR</option>
-                        </select>
-                        <Input
-                            label="Division"
-                            placeholder="Enter Division"
+                        <select
+                            className="form-control mb-3"
                             value={registrationData.division_name}
-                            onChange={(e) => {
+                            onChange={(e) =>
                                 setRegisterationData({
                                     ...registrationData,
                                     division_name: e.target.value
                                 })
-                            }}
-                            required
-                        />
+                            }
+                        >
+                            <option value="">Select Department</option>
+                            <option value="IT">IT</option>
+                            <option value="HR">HR</option>
+                        </select>
+
                         <Input label="Mobile"
-                            placeholder='Create Password'
-                            type='password'
-                            value={registrationData.password}
+                            placeholder='10-digit-mobile-number'
+                            type='tel'
+                            value={registrationData.phn_no}
                             onChange={(e) => {
                                 setRegisterationData({
-                                    ...registrationData, password: e.target.value
+                                    ...registrationData, phn_no: e.target.value
                                 })
                             }}
                             required />
-                        <Input label="Mobile"
+                        <Input label="Password"
                             placeholder='Create Password'
                             type='password'
                             value={registrationData.password}
