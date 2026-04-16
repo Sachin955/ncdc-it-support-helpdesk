@@ -1,6 +1,16 @@
 import Input from "../components/Input";
 import Button from "../components/Button";
+import { useState } from "react";
 function Register() {
+    const [registrationData, setRegisterationData] = useState({
+        emp_id: '',
+        name: '',
+        email: '',
+        division_name: '',
+        phn_no: '',
+        password: ''
+    })
+    console.log(registrationData)
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
@@ -17,16 +27,72 @@ function Register() {
                         <div className="d-flex gap-2 mb-3">
                             <Button text='Login' /><Button text='Register' />
                         </div>
-                        <Input label="Employee ID" placeholder='e.g., EMP001'  required />
-                        <Input  label="Full Name"placeholder='Enter Your Full Name' required />
-                        <Input label="Email ID" placeholder='Enter Your Email ID' required />
+                        <Input label="Employee ID"
+                            placeholder='e.g., EMP001'
+                            value={registrationData.emp_id}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData, emp_id: e.target.value
+                                })
+                            }}
+                            required />
+
+                        <Input label="Full Name"
+                            placeholder='Enter Your Full Name'
+                            value={registrationData.name}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData, name: e.target.value
+                                })
+                            }}
+                            required />
+                        <Input label="Email ID"
+                            placeholder='Enter Your Email ID'
+                            value={registrationData.email}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData, email: e.target.value
+                                })
+                            }}
+                            required />
                         <select className="form-control mb-3">
                             <option disabled selected>Select Department</option>
                             <option>IT</option>
                             <option>HR</option>
                         </select>
-                        <Input label="Division" placeholder='10-digit-mobile-number' required/>
-                        <Input label="Mobile" placeholder='Create Password' type='password' required/>
+                        <Input
+                            label="Division"
+                            placeholder="Enter Division"
+                            value={registrationData.division_name}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData,
+                                    division_name: e.target.value
+                                })
+                            }}
+                            required
+                        />
+                        <Input label="Mobile"
+                            placeholder='Create Password'
+                            type='password'
+                            value={registrationData.password}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData, password: e.target.value
+                                })
+                            }}
+                            required />
+                        <Input label="Mobile"
+                            placeholder='Create Password'
+                            type='password'
+                            value={registrationData.password}
+                            onChange={(e) => {
+                                setRegisterationData({
+                                    ...registrationData, password: e.target.value
+                                })
+                            }}
+                            required />
+
                         <Button text='Register' />
                     </div>
                 </div>
