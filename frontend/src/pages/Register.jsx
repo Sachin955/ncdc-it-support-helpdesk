@@ -10,26 +10,50 @@ function Register() {
         phn_no: '',
         password: ''
     })
-    console.log(registrationData)
+    const [message, setMessage] = useState('')
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        console.log("Sending data:", registrationData); // 👈 ADD THIS
+        try {
+            const res = await fetch("http://localhost:5000/api/auth/register", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(registrationData)
+
+            });
+
+            const data = await res.json();
+            console.log('response data', data);
+            setMessage(data.message)
+
+        } catch (error) {
+            console.log("Error", error)
+        }
+
+        setRegisterationData('')
+    }
     return (
         <div className="container mt-5">
             <div className="row justify-content-center">
 
                 <div className="col-12 col-md-6 col-lg-4">
-
                     <div className="card p-4 shadow">
-
                         <div className="text-center mb-4">
                             <img src="/NCDC_India_Logo_2020.png" alt="ncdc-logo" className="img-fluid" style={{ height: "100px" }} />
                         </div>
 
                         <h4 className="text-center mb-4">Employee Registration</h4>
+                        {
+                            message && <div className="alert alert-success text-center">{message}</div>
+                        }
                         <div className="d-flex gap-2 mb-3">
                             <Button text='Login' /><Button text='Register' />
                         </div>
                         <Input label="Employee ID"
                             placeholder='e.g., EMP001'
-                            value={registrationData.emp_id}
+                            value={registrationData.emp_id || ""}
                             onChange={(e) => {
                                 setRegisterationData({
                                     ...registrationData, emp_id: e.target.value
@@ -39,7 +63,7 @@ function Register() {
 
                         <Input label="Full Name"
                             placeholder='Enter Your Full Name'
-                            value={registrationData.name}
+                            value={registrationData.name || ""}
                             onChange={(e) => {
                                 setRegisterationData({
                                     ...registrationData, name: e.target.value
@@ -48,7 +72,7 @@ function Register() {
                             required />
                         <Input label="Email ID"
                             placeholder='Enter Your Email ID'
-                            value={registrationData.email}
+                            value={registrationData.email || ""}
                             onChange={(e) => {
                                 setRegisterationData({
                                     ...registrationData, email: e.target.value
@@ -57,7 +81,7 @@ function Register() {
                             required />
                         <select
                             className="form-control mb-3"
-                            value={registrationData.division_name}
+                            value={registrationData.division_name || ""}
                             onChange={(e) =>
                                 setRegisterationData({
                                     ...registrationData,
@@ -73,7 +97,7 @@ function Register() {
                         <Input label="Mobile"
                             placeholder='10-digit-mobile-number'
                             type='tel'
-                            value={registrationData.phn_no}
+                            value={registrationData.phn_no || ""}
                             onChange={(e) => {
                                 setRegisterationData({
                                     ...registrationData, phn_no: e.target.value
@@ -83,7 +107,7 @@ function Register() {
                         <Input label="Password"
                             placeholder='Create Password'
                             type='password'
-                            value={registrationData.password}
+                            value={registrationData.password || ""}
                             onChange={(e) => {
                                 setRegisterationData({
                                     ...registrationData, password: e.target.value
@@ -91,7 +115,7 @@ function Register() {
                             }}
                             required />
 
-                        <Button text='Register' />
+                        <Button text='Register' onClick={handleRegister} />
                     </div>
                 </div>
 
