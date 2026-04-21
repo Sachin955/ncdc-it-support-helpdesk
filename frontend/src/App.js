@@ -5,11 +5,11 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-<<<<<<< Updated upstream
+
         
-=======
+
         <Register/>
->>>>>>> Stashed changes
+
       </header>
     </div>
   );

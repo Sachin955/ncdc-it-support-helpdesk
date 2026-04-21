@@ -11,8 +11,9 @@ const app = express();//server instance
 
 
 //middleware
-app.use(express.json());// converts incoming JSON to JS object
+
 app.use(cors());// allow request from frontend (port 3000 -> 5000)
+app.use(express.json());// converts incoming JSON to JS object
 
 
 //Database connection
@@ -27,3 +28,4 @@ app.use('/api/auth', require('./routes/authRoutes'));//Routes Connection
 app.listen(5000, () => {
   console.log('Server running on port 5000');
 });
+
