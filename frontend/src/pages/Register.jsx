@@ -1,7 +1,14 @@
-import Input from "../components/Input";
+
 import Button from "../components/Button";
+import { validateField } from "../utils/validation";
+import { isFormValid } from "../utils/validation"
+import Layout from "../components/Layout";
+import Input from "../components/Input";
 import { useState } from "react";
+import {useNavigate} from "react-router-dom"
 function Register() {
+
+    const navigate = useNavigate()
     const [registrationData, setRegisterationData] = useState({
         emp_id: '',
         name: '',
@@ -11,122 +18,155 @@ function Register() {
         password: ''
     })
     const [message, setMessage] = useState('')
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        console.log("Sending data:", registrationData); // 👈 ADD THIS
+    const [error, setError] = useState({})
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setRegisterationData((prev) => ({
+            ...prev,
+            [name]: value
+        }));
+        const err = validateField(name, value);
+        setError((prev) => ({
+            ...prev,
+            [name]: err
+        }));
+    };
+
+    const handleSubmit = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/auth/register", {
+            const res = fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
+                header: {
+                    "Content-type": "application/json"
                 },
                 body: JSON.stringify(registrationData)
-
             });
+            const data = (await res).json()
 
-            const data = await res.json();
-            console.log('response data', data);
-            setMessage(data.message)
+            setMessage(data.message || "User registered successfully");
 
+            // setRegisterationData({
+            //     emp_id: "",
+            //     name: "",
+            //     email: "",
+            //     division_name: "",
+            //     phn_no: "",
+            //     password: ""
+            // });
+
+            // setError({}); // clear errors
         } catch (error) {
-            console.log("Error", error)
+            console.log(error);
+            setMessage("Server error");
         }
-
-        setRegisterationData('')
     }
+
     return (
-        <div className="container mt-5">
-            <div className="row justify-content-center">
+        <div className="register-form container pages">
 
-                <div className="col-12 col-md-6 col-lg-4">
-                    <div className="card p-4 shadow">
-                        <div className="text-center mb-4">
-                            <img src="/NCDC_India_Logo_2020.png" alt="ncdc-logo" className="img-fluid" style={{ height: "100px" }} />
-                        </div>
-
-                        <h4 className="text-center mb-4">Employee Registration</h4>
-                        {
-                            message && <div className="alert alert-success text-center">{message}</div>
-                        }
-                        <div className="d-flex gap-2 mb-3">
-                            <Button text='Login' /><Button text='Register' />
-                        </div>
-                        <Input label="Employee ID"
-                            placeholder='e.g., EMP001'
-                            value={registrationData.emp_id || ""}
-                            onChange={(e) => {
-                                setRegisterationData({
-                                    ...registrationData, emp_id: e.target.value
-                                })
-                            }}
-                            required />
-
-                        <Input label="Full Name"
-                            placeholder='Enter Your Full Name'
-                            value={registrationData.name || ""}
-                            onChange={(e) => {
-                                setRegisterationData({
-                                    ...registrationData, name: e.target.value
-                                })
-                            }}
-                            required />
-                        <Input label="Email ID"
-                            placeholder='Enter Your Email ID'
-                            value={registrationData.email || ""}
-                            onChange={(e) => {
-                                setRegisterationData({
-                                    ...registrationData, email: e.target.value
-                                })
-                            }}
-                            required />
-                        <select
-                            className="form-control mb-3"
-                            value={registrationData.division_name || ""}
-                            onChange={(e) =>
-                                setRegisterationData({
-                                    ...registrationData,
-                                    division_name: e.target.value
-                                })
-                            }
-                        >
-                            <option value="">Select Department</option>
-                            <option value="IT">IT</option>
-                            <option value="HR">HR</option>
-                        </select>
-
-                        <Input label="Mobile"
-                            placeholder='10-digit-mobile-number'
-                            type='tel'
-                            value={registrationData.phn_no || ""}
-                            onChange={(e) => {
-                                setRegisterationData({
-                                    ...registrationData, phn_no: e.target.value
-                                })
-                            }}
-                            required />
-                        <Input label="Password"
-                            placeholder='Create Password'
-                            type='password'
-                            value={registrationData.password || ""}
-                            onChange={(e) => {
-                                setRegisterationData({
-                                    ...registrationData, password: e.target.value
-                                })
-                            }}
-                            required />
-
-                        <Button text='Register' onClick={handleRegister} />
-                    </div>
-                </div>
-
-
-
+            <Layout title="Employee Registration" />
+            <div className="d-flex gap-2 mt-2 mb-3">
+                <Button text='New Registration' /><Button text='Go to Login' onClick={()=> navigate("/login")} />
             </div>
+            <Input
+                label="Employee ID"
+                placeholder='e.g., EMP001'
+                value={registrationData.emp_id || ""}
+                onChange={handleChange}
+                name='emp_id'
+                required />
+            {error.emp_id && (
+                <small className="text-danger">{error.emp_id} </small>
+            )}
+            <Input
+                label="Name"
+                placeholder='Enter the name'
+                value={registrationData.name || ""}
+                onChange={handleChange}
+                name='name'
+                required />
+            {error.name && (
+                <small className="text-danger">{error.name}</small>
+            )}
+            <Input
+                label="Email"
+                placeholder='Enter your email'
+                value={registrationData.email || ""}
+                onChange={handleChange}
+                name='email'
+                required />
+            {error.email && (
+                <small className="text-danger">{error.email}</small>
+            )}
+            <select
+            
+                className="form-control mb-3"
+                name="division_name"
+                value={registrationData.division_name}
+                onChange={handleChange}
+            >
+                <option value="">Select Division</option>
+                <option value="IT">Central Library</option>
+                <option value="HR">Centre for AIDS and Related Diseases</option>
+                <option value="HR">Centre for Arboviral and Zoonotic Diseases</option>
+                <option value="HR">Centre for Bacterial Disease and Drug Resistance and Antimicrobial Resistance Containment</option>
+                <option value="HR">Centre for Environmental & Occupational Health, Climate Change & Health</option>
+                <option value="HR">Centre for Medical Entomology and Vector Management</option>
+                <option value="HR">Centre for One Health</option>
+                <option value="HR">Department of Parasitic Disease</option>
+                <option value="HR">Division of Biochemistry and Toxicology</option>
+                <option value="HR">Division of Epidemiology</option>
+                <option value="HR">Division of Microbiology - Respiratory & Teratogenic Viruses</option>
+                <option value="HR">Division of Statistical Monitoring & Evaluation</option>
+                <option value="HR">Enterovirus Division</option>
+                <option value="HR">Integrated Disease Surveillance Programme (IDSP)</option>
+                <option value="HR">Microbiology - Respiratory Viruses Division and TB Division</option>
+                <option value="HR">NPMU- Establishment and strengthening</option>
+                <option value="HR">Public Health Preparedness & Non-Communicable Diseases</option>
+                <option value="HR">Viral Hepatitis & Biotechnology Division</option>
+            </select>
 
+            {error.division_name && (
+                <small className="text-danger">{error.division_name}</small>
+            )}
+            <Input
+                label="Contact Number"
+                placeholder='Enter your Mobile no'
+                value={registrationData.phn_no || ""}
+                onChange={handleChange}
+                name='phn_no'
+                required />
+            {error.phn_no && (
+                <small className="text-danger">{error.phn_no}</small>
+            )}
+            <Input
+                label="Password"
+                placeholder='Enter your password'
+                value={registrationData.password || ""}
+                onChange={handleChange}
+                name='password'
+                required />
+            {error.password && (
+                <small className="text-danger">{error.password}</small>
+            )}
+
+            <Button
+                text='Register'
+                disabled={true}
+                onClick={handleSubmit}
+                disabled={!isFormValid(registrationData, error)
+                }
+            />
         </div>
+
+
 
     );
 
 }
+
+
+
 
 export default Register;

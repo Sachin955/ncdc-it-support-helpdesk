@@ -1,6 +1,6 @@
 import './Input.css'
 
-function Input({ label, placeholder, type = 'text', onChange, value, required }) {
+function Input({ label, placeholder, type = 'text', onChange, value, required, name }) {
     return (
         <div>
             <label className="form-label fw-semibold">
@@ -11,6 +11,7 @@ function Input({ label, placeholder, type = 'text', onChange, value, required })
                 onChange={onChange}
                 value={value}
                 className="form-control mb-4"
+                name={name}
             />
         </div>
     )
