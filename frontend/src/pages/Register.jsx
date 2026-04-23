@@ -5,7 +5,8 @@ import { isFormValid } from "../utils/validation"
 import Layout from "../components/Layout";
 import Input from "../components/Input";
 import { useState } from "react";
-import {useNavigate} from "react-router-dom"
+import { FaArrowLeft, FaCentercode } from "react-icons/fa";
+import { useNavigate } from "react-router-dom"
 function Register() {
 
     const navigate = useNavigate()
@@ -18,7 +19,8 @@ function Register() {
         password: ''
     })
     const [message, setMessage] = useState('')
-    const [error, setError] = useState({})
+    const [formError, setFormError] = useState({})
+    const [errorMessage, setErrorMessage] = useState('')
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -27,7 +29,7 @@ function Register() {
             [name]: value
         }));
         const err = validateField(name, value);
-        setError((prev) => ({
+        setFormError((prev) => ({
             ...prev,
             [name]: err
         }));
@@ -35,39 +37,67 @@ function Register() {
 
     const handleSubmit = async () => {
         try {
-            const res = fetch("http://localhost:5000/api/auth/register", {
+            const res = await fetch("http://localhost:5000/api/auth/register", {
                 method: "POST",
-                header: {
-                    "Content-type": "application/json"
+                headers: {
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify(registrationData)
             });
-            const data = (await res).json()
+            const data = await res.json()
 
-            setMessage(data.message || "User registered successfully");
+            console.log('data', data)
 
-            // setRegisterationData({
-            //     emp_id: "",
-            //     name: "",
-            //     email: "",
-            //     division_name: "",
-            //     phn_no: "",
-            //     password: ""
-            // });
+            if (!res.ok) {
+                setErrorMessage(data.error || "Something went wrong");
+                setMessage("");
+                return;
+            }
 
-            // setError({}); // clear errors
+            setMessage(`${data.user.name} you are ${data.message}`);
+            setErrorMessage("");
+
+            setTimeout(() => {
+                navigate(("/login"))
+            },3000)
+
+
+            setRegisterationData({
+                emp_id: "",
+                name: "",
+                email: "",
+                division_name: "",
+                phn_no: "",
+                password: ""
+            });
+
+            // setFormError({}); // clear FormErrors
         } catch (error) {
-            console.log(error);
-            setMessage("Server error");
+            console.log('error', error);
+            setErrorMessage("Server error, please try again");
+            setMessage("");
         }
     }
 
     return (
         <div className="register-form container pages">
 
-            <Layout title="Employee Registration" />
-            <div className="d-flex gap-2 mt-2 mb-3">
-                <Button text='New Registration' /><Button text='Go to Login' onClick={()=> navigate("/login")} />
+            <Layout title="User Registration" />
+            {message && (
+                <div className="text-success text-center mb-3 fs-3">
+                    {message}
+                </div>
+            )}
+            {errorMessage && (
+                <div className="text-danger text-center mb-3 fs-3">
+                    {errorMessage}
+                </div>
+            )}
+            <div className="d-flex justify-content-center gap-4 mb-4">
+                <Button
+                    text='Please fill to Register'
+                    className="w-100 px-4 py-4 register-btn"
+                />
             </div>
             <Input
                 label="Employee ID"
@@ -76,8 +106,8 @@ function Register() {
                 onChange={handleChange}
                 name='emp_id'
                 required />
-            {error.emp_id && (
-                <small className="text-danger">{error.emp_id} </small>
+            {formError.emp_id && (
+                <small className="text-danger">{formError.emp_id} </small>
             )}
             <Input
                 label="Name"
@@ -86,8 +116,8 @@ function Register() {
                 onChange={handleChange}
                 name='name'
                 required />
-            {error.name && (
-                <small className="text-danger">{error.name}</small>
+            {formError.name && (
+                <small className="text-danger">{formError.name}</small>
             )}
             <Input
                 label="Email"
@@ -96,11 +126,11 @@ function Register() {
                 onChange={handleChange}
                 name='email'
                 required />
-            {error.email && (
-                <small className="text-danger">{error.email}</small>
+            {formError.email && (
+                <small className="text-danger">{formError.email}</small>
             )}
             <select
-            
+
                 className="form-control mb-3"
                 name="division_name"
                 value={registrationData.division_name}
@@ -127,8 +157,8 @@ function Register() {
                 <option value="HR">Viral Hepatitis & Biotechnology Division</option>
             </select>
 
-            {error.division_name && (
-                <small className="text-danger">{error.division_name}</small>
+            {formError.division_name && (
+                <small className="text-danger">{formError.division_name}</small>
             )}
             <Input
                 label="Contact Number"
@@ -137,8 +167,8 @@ function Register() {
                 onChange={handleChange}
                 name='phn_no'
                 required />
-            {error.phn_no && (
-                <small className="text-danger">{error.phn_no}</small>
+            {formError.phn_no && (
+                <small className="text-danger">{formError.phn_no}</small>
             )}
             <Input
                 label="Password"
@@ -147,17 +177,34 @@ function Register() {
                 onChange={handleChange}
                 name='password'
                 required />
-            {error.password && (
-                <small className="text-danger">{error.password}</small>
+            {formError.password && (
+                <small className="text-danger">{formError.password}</small>
             )}
 
-            <Button
-                text='Register'
-                disabled={true}
-                onClick={handleSubmit}
-                disabled={!isFormValid(registrationData, error)
-                }
-            />
+
+            <div className="row justify-content-center">
+                <div className="col-12 col-md-6 col-md-4">
+                    <Button
+                        text='Register'
+                        onClick={handleSubmit}
+                        disabled={!isFormValid(registrationData, formError)
+                        }
+                        className="w-100 py-4"
+                    />
+                </div>
+            </div>
+
+            <div className="text-center mb-4 mt-4">
+                <FaArrowLeft
+                    size={22}
+                    style={{ cursor: "pointer" }}
+                    className="me-2"
+                />
+
+                <span onClick={() => navigate("/login")} style={{ cursor: "pointer" }}>
+                    Back to the Login Page
+                </span>
+            </div>
         </div>
 
 

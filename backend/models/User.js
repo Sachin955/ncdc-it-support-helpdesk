@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 
 //describe the data structure
 const userSchema = new mongoose.Schema({
-  emp_id:Number,
+  emp_id:String,
   name: String,
   email: { type: String, unique: true },
   division_name: String,

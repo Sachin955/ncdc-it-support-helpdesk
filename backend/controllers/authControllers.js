@@ -7,6 +7,7 @@ const User = require('../models/User');
 const register = async (req, res) => {
   try {
     const { emp_id, name, email, division_name, phn_no, password } = req.body;
+    console.log("BODY", req.body)
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -19,9 +20,8 @@ const register = async (req, res) => {
       password: hashedPassword
     });
 
-    // ✅ CLEAN RESPONSE (password hide + proper format)
     res.status(201).json({
-      message: "User registered successfully",
+      message: "registered successfully",
       user: {
         emp_id: user.emp_id,
         name: user.name,
@@ -33,31 +33,48 @@ const register = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+
+    // ✅ Duplicate email handle यहाँ
+    if (error.code === 11000) {
+      return res.status(400).json({
+        error: "Email already exists"
+      });
+    }
+
+    console.log("ACTUAL ERROR:", error);   // 👈 add this
+  res.status(500).json({ error: "Server error" });
   }
 };
 
 // LOGIN
 const login = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = req.body; // same field में email/emp_id आ रहा है
 
-    const user = await User.findOne({ email });
+    // 👇 email OR emp_id दोनों check
+    const user = await User.findOne({
+      $or: [
+        { email: email },
+        { emp_id: email }
+      ]
+    });
+
     if (!user) {
-      return res.status(400).json({ msg: 'User not found' });
+      return res.status(400).json({ error: "User not found" });
     }
 
+    // 👇 password match
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid password' });
+      return res.status(400).json({ error: "Invalid password" });
     }
 
+    // 👇 token generate
     const token = jwt.sign(
       { id: user._id },
       process.env.JWT_SECRET
     );
 
-    // ✅ CLEAN RESPONSE
     res.json({
       token,
       user: {
@@ -71,7 +88,8 @@ const login = async (req, res) => {
     });
 
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.log("LOGIN ERROR:", error);
+    res.status(500).json({ error: "Server error" });
   }
 };
 

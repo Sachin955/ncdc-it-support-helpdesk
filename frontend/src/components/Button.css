@@ -6,5 +6,8 @@
 }
 
 .custom-btn:hover {
-  background-color: lightskyblue !important;
+  background-color: #8476e7;
+}
+.register-btn {
+  cursor: default; 
 }
